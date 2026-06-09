@@ -5,6 +5,18 @@ import adminRouter from "./routes/admin.js";
 import messageQueue from "./functions/messageQueue.js";
 import { pushLog, subscribe as subscribeAdminEvents, getLogs, getActivity } from "./functions/adminEvents.js";
 
+// ── LOAD CONFIGURATION FROM config.js (NO .env NEEDED) ─────────────────────
+import config from './config.js';
+
+// Set all config values as environment variables
+Object.keys(config).forEach(key => {
+    process.env[key] = config[key];
+});
+
+// Also set individual variables for easier access
+const { PREFIX, MY_NUMBER, MODERATORS, MONGODB_KEY, ADMIN_PASSWORD, PORT, SESSION_SECRET } = config;
+// ────────────────────────────────────────────────────────────────────────────
+
 // ── Console interceptor — feeds log ring buffer ───────────────────────────────
 const _log = console.log.bind(console);
 const _info = console.info.bind(console);
@@ -37,6 +49,7 @@ app.use(
 	}),
 );
 
+// Check SESSION_SECRET (now from config)
 if (!process.env.SESSION_SECRET) {
 	console.error("FATAL: SESSION_SECRET environment variable is not set. Cannot run application securely.");
 	process.exit(1);
